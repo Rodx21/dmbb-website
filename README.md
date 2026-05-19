@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DMBB – Dublin Men's Basketball Board Website
 
-## Getting Started
+Official website for the Dublin Men's Basketball Board, organising basketball leagues and cup competitions across Greater Dublin, Ireland.
 
-First, run the development server:
+## Tech Stack
+
+- **Next.js 16** (App Router, TypeScript)
+- **Supabase** (PostgreSQL + Auth + RLS)
+- **Tailwind CSS**
+- **Vercel** (deployment)
+
+## Prerequisites
+
+- Node.js 18+
+- npm
+- A [Supabase](https://supabase.com) account (free tier is sufficient)
+
+## Local Setup
+
+### 1. Clone and install
+
+```bash
+git clone <your-repo-url>
+cd dmbb-website
+npm install
+```
+
+### 2. Create a Supabase project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project.
+2. Note your **Project URL** and **anon public key** from Project Settings → API.
+3. Note your **service_role key** from the same page (keep this secret).
+
+### 3. Run the database migration
+
+In your Supabase project, go to **SQL Editor** and paste the entire contents of:
+
+```
+supabase/migrations/001_initial_schema.sql
+```
+
+This creates all tables, RLS policies, the `recalculate_standings` function, and inserts seed data (teams, divisions, sample news).
+
+### 4. Add environment variables
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local` and fill in your values:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
+
+### 5. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Description |
+|---|---|
+| `/` | Homepage – hero, standings, results, fixtures, news |
+| `/fixtures` | All fixtures with division + month filters |
+| `/results` | All results, filterable by division |
+| `/standings` | Full league tables for all divisions |
+| `/clubs` | All registered clubs |
+| `/news` | News articles |
+| `/news/[slug]` | Individual article |
+| `/admin` | Admin dashboard (protected) |
+| `/admin/results` | Enter match scores |
+| `/admin/fixtures` | Add/delete fixtures |
+| `/admin/teams` | Add/edit teams |
+| `/admin/news` | Create/edit news articles |
 
-## Learn More
+## Admin Access
 
-To learn more about Next.js, take a look at the following resources:
+1. In your Supabase project, go to **Authentication → Users → Add user**.
+2. Create a user with an email and password.
+3. Go to [http://localhost:3000/admin/login](http://localhost:3000/admin/login) and sign in.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Only authenticated users can write data. The site enforces this via Supabase RLS policies and a Next.js middleware guard on all `/admin/*` routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment to Vercel
 
-## Deploy on Vercel
+1. Push the project to a GitHub repository.
+2. Go to [vercel.com](https://vercel.com) → **New Project** → import your repo.
+3. In the Vercel project settings, add the three environment variables:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+4. Deploy. Vercel will build and serve the site automatically.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Future pushes to `main` will trigger automatic re-deployments.
