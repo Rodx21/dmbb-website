@@ -1,6 +1,8 @@
+> **Unofficial concept project — not affiliated with Dublin Men's Basketball Board.**
+
 # DMBB – Dublin Men's Basketball Board Website
 
-Official website for the Dublin Men's Basketball Board, organising basketball leagues and cup competitions across Greater Dublin, Ireland.
+Concept website for the Dublin Men's Basketball Board, organising basketball leagues and cup competitions across Greater Dublin, Ireland.
 
 ## Tech Stack
 
